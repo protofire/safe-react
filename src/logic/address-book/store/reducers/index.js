@@ -1,26 +1,16 @@
 // @flow
 import { Map } from 'immutable'
 import { handleActions, type ActionType } from 'redux-actions'
-import { ADD_TOKEN } from '~/logic/tokens/store/actions/addToken'
-import { REMOVE_TOKEN } from '~/logic/tokens/store/actions/removeToken'
-import { ADD_TOKENS } from '~/logic/tokens/store/actions/saveTokens'
+import { SET_NAMES_FOR_ADDRESSES } from '../actions'
 
-export const TOKEN_REDUCER_ID = 'tokens'
+export const ADDRESS_BOOK_REDUCER_ID = 'addressesToName'
 
 export type State = Map<string, string>
 
 export default handleActions<State, *>(
   {
-    [SET_NAME_FOR_ADDRESS]: (state: State, action: ActionType<Function>): State => {
-      const { tokens } = action.payload
+    [SET_NAMES_FOR_ADDRESSES]: (state: State, action: ActionType<Function>): State => {
 
-      const newState = state.withMutations((map) => {
-        tokens.forEach((token) => {
-          map.set(token.address, token)
-        })
-      })
-
-      return newState
     },
     [ADD_TOKEN]: (state: State, action: ActionType<Function>): State => {
       const { token } = action.payload
