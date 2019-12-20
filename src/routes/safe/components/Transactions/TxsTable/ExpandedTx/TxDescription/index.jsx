@@ -49,6 +49,9 @@ type DescriptionDescProps = {
   removedOwner?: string,
   addedOwner?: string,
   newThreshold?: string,
+  newMasterCopy?: string,
+  enableModule?: string,
+  disableModule?: string,
 }
 
 type CustomDescProps = {
@@ -71,7 +74,9 @@ const TransferDescription = ({ amount = '', recipient }: TransferDescProps) => (
   </Block>
 )
 
-const SettingsDescription = ({ removedOwner, addedOwner, newThreshold }: DescriptionDescProps) => (
+const SettingsDescription = ({
+  removedOwner, addedOwner, newThreshold, newMasterCopy, enableModule, disableModule,
+}: DescriptionDescProps) => (
   <>
     {removedOwner && (
       <Block data-testid={TRANSACTIONS_DESC_REMOVE_OWNER_TEST_ID}>
@@ -90,6 +95,30 @@ const SettingsDescription = ({ removedOwner, addedOwner, newThreshold }: Descrip
         <Bold>Change required confirmations:</Bold>
         <Paragraph size="md" noMargin>
           {newThreshold}
+        </Paragraph>
+      </Block>
+    )}
+    {newMasterCopy && (
+      <Block>
+        <Bold>Change mastercopy:</Bold>
+        <Paragraph size="md" noMargin>
+          {newMasterCopy}
+        </Paragraph>
+      </Block>
+    )}
+    {enableModule && (
+      <Block>
+        <Bold>Enable module:</Bold>
+        <Paragraph size="md" noMargin>
+          {enableModule}
+        </Paragraph>
+      </Block>
+    )}
+    {disableModule && (
+      <Block>
+        <Bold>Disable module:</Bold>
+        <Paragraph size="md" noMargin>
+          {disableModule}
         </Paragraph>
       </Block>
     )}
@@ -157,6 +186,9 @@ const TxDescription = ({ tx, classes }: Props) => {
     removedOwner,
     addedOwner,
     newThreshold,
+    newMasterCopy,
+    enableModule,
+    disableModule,
     cancellationTx,
     customTx,
     creationTx,
@@ -166,7 +198,14 @@ const TxDescription = ({ tx, classes }: Props) => {
   return (
     <Block className={classes.txDataContainer}>
       {modifySettingsTx && (
-        <SettingsDescription removedOwner={removedOwner} newThreshold={newThreshold} addedOwner={addedOwner} />
+        <SettingsDescription
+          removedOwner={removedOwner}
+          newThreshold={newThreshold}
+          addedOwner={addedOwner}
+          newMasterCopy={newMasterCopy}
+          enableModule={enableModule}
+          disableModule={disableModule}
+        />
       )}
       {customTx && (
         <CustomDescription data={data} amount={amount} recipient={recipient} classes={classes} />

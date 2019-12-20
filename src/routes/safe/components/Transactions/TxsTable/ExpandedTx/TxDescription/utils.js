@@ -8,6 +8,9 @@ type DecodedTxData = {
   modifySettingsTx?: boolean,
   removedOwner?: string,
   newThreshold?: string,
+  newMasterCopy?: string,
+  enableModule?: string,
+  disableModule?: string,
   addedOwner?: string,
   cancellationTx?: boolean,
   customTx?: boolean,
@@ -50,6 +53,12 @@ export const getTxData = (tx: Transaction): DecodedTxData => {
         txData.newThreshold = tx.decodedParams.args[0]
         txData.removedOwner = tx.decodedParams.args[1]
         txData.addedOwner = tx.decodedParams.args[2]
+      } else if (tx.decodedParams.methodName === 'newMasterCopy') {
+        txData.newMasterCopy = tx.decodedParams.args[0]
+      } else if (tx.decodedParams.methodName === 'enableModule') {
+        txData.enableModule = tx.decodedParams.args[0]
+      } else if (tx.decodedParams.methodName === 'disableModule') {
+        txData.disableModule = tx.decodedParams.args[1]
       }
       /* eslint-enable */
     }

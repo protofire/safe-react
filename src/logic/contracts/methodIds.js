@@ -44,12 +44,14 @@ const METHOD_TO_ID = {
   '0x0d582f13': 'addOwnerWithThreshold',
   '0xf8dc5dd9': 'removeOwner',
   '0x694e80c3': 'changeThreshold',
+  '0x7de7edef': 'changeMasterCopy',
+  '0x610b5925': 'enableModule',
+  '0xe009cfde': 'disableModule',
 }
 
 export const decodeParamsFromSafeMethod = async (data: string) => {
   const web3 = await getWeb3()
   const [methodId, params] = [data.slice(0, 10), data.slice(10)]
-
   switch (methodId) {
     // swapOwner
     case '0xe318b52b':
@@ -77,6 +79,27 @@ export const decodeParamsFromSafeMethod = async (data: string) => {
       return {
         methodName: METHOD_TO_ID[methodId],
         args: web3.eth.abi.decodeParameters(['uint'], params),
+      }
+
+    // changeMasterCopy
+    case '0x7de7edef':
+      return {
+        methodName: METHOD_TO_ID[methodId],
+        args: web3.eth.abi.decodeParameters(['address'], params),
+      }
+
+    // enableModule
+    case '0x610b5925':
+      return {
+        methodName: METHOD_TO_ID[methodId],
+        args: web3.eth.abi.decodeParameters(['address'], params),
+      }
+
+    // disbleModule
+    case '0xe009cfde':
+      return {
+        methodName: METHOD_TO_ID[methodId],
+        args: web3.eth.abi.decodeParameters(['address', 'address'], params),
       }
 
     default:

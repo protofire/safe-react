@@ -29,10 +29,12 @@ import { type Actions } from '../container/actions'
 import Balances from './Balances'
 import Transactions from './Transactions'
 import Settings from './Settings'
+import Allowances from './Allowances'
 import { styles } from './style'
 
 export const BALANCES_TAB_BTN_TEST_ID = 'balances-tab-btn'
 export const SETTINGS_TAB_BTN_TEST_ID = 'settings-tab-btn'
+export const ALLOWANCES_TAB_BTN_TEST_ID = 'allowances-tab-btn'
 export const TRANSACTIONS_TAB_BTN_TEST_ID = 'transactions-tab-btn'
 export const SAFE_VIEW_NAME_HEADING_TEST_ID = 'safe-name-heading'
 
@@ -150,6 +152,7 @@ const Layout = (props: Props) => {
           <Tab label="Balances" value={`${match.url}/balances`} data-testid={BALANCES_TAB_BTN_TEST_ID} />
           <Tab label="Transactions" value={`${match.url}/transactions`} data-testid={TRANSACTIONS_TAB_BTN_TEST_ID} />
           <Tab label="Settings" value={`${match.url}/settings`} data-testid={SETTINGS_TAB_BTN_TEST_ID} />
+          <Tab label="Allowances" value={`${match.url}/allowances`} data-testid={ALLOWANCES_TAB_BTN_TEST_ID} />
         </Tabs>
       </Row>
       <Hairline color={border} style={{ marginTop: '-2px' }} />
@@ -198,6 +201,25 @@ const Layout = (props: Props) => {
           path={`${match.path}/settings`}
           render={() => (
             <Settings
+              granted={granted}
+              safeAddress={address}
+              safeName={name}
+              etherScanLink={etherScanLink}
+              updateSafe={updateSafe}
+              threshold={safe.threshold}
+              owners={safe.owners}
+              network={network}
+              userAddress={userAddress}
+              createTransaction={createTransaction}
+              safe={safe}
+            />
+          )}
+        />
+        <Route
+          exact
+          path={`${match.path}/allowances`}
+          render={() => (
+            <Allowances
               granted={granted}
               safeAddress={address}
               safeName={name}
