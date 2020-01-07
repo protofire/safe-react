@@ -4,6 +4,7 @@ import { getWeb3 } from '~/logic/wallets/getWeb3'
 import { type Operation } from '~/logic/safe/transactions'
 
 export const CALL = 0
+export const DELEGATE_CALL = 1
 export const TX_TYPE_EXECUTION = 'execution'
 export const TX_TYPE_CONFIRMATION = 'confirmation'
 
@@ -19,7 +20,7 @@ export const getApprovalTransaction = async (
   gasPrice: number,
   gasToken: string,
   refundReceiver: string,
-  sender: string,
+  sender: string
 ) => {
   const txHash = await safeInstance.getTransactionHash(
     to,
@@ -33,8 +34,8 @@ export const getApprovalTransaction = async (
     refundReceiver,
     nonce,
     {
-      from: sender,
-    },
+      from: sender
+    }
   )
 
   try {
@@ -61,7 +62,7 @@ export const getExecutionTransaction = async (
   gasToken: string,
   refundReceiver: string,
   sender: string,
-  sigs: string,
+  sigs: string
 ) => {
   try {
     const web3 = getWeb3()
@@ -77,7 +78,7 @@ export const getExecutionTransaction = async (
       gasPrice,
       gasToken,
       refundReceiver,
-      sigs,
+      sigs
     )
   } catch (err) {
     console.error(`Error while creating transaction: ${err}`)

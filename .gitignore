@@ -4,3 +4,5 @@ build_webpack/
 build/
 yarn-error.log
 .env*
+/.yalc
+yalc.lock

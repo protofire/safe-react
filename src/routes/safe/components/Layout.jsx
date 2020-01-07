@@ -2,13 +2,14 @@
 import * as React from 'react'
 import classNames from 'classnames/bind'
 import {
-  Switch, Redirect, Route, withRouter,
+  Switch, Redirect, Route, withRouter
 } from 'react-router-dom'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
 import CallMade from '@material-ui/icons/CallMade'
 import CallReceived from '@material-ui/icons/CallReceived'
 import { withStyles } from '@material-ui/core/styles'
+
 import Hairline from '~/components/layout/Hairline'
 import Block from '~/components/layout/Block'
 import Identicon from '~/components/Identicon'
@@ -23,13 +24,15 @@ import SendModal from './Balances/SendModal'
 import Receive from './Balances/Receive'
 import NoSafe from '~/components/NoSafe'
 import { type SelectorProps } from '~/routes/safe/container/selector'
-import { getEtherScanLink } from '~/logic/wallets/getWeb3'
+import { getEtherScanLink, getWeb3 } from '~/logic/wallets/getWeb3'
 import { border } from '~/theme/variables'
 import { type Actions } from '../container/actions'
 import Balances from './Balances'
 import Transactions from './Transactions'
 import Settings from './Settings'
+import Apps from './Apps'
 import { styles } from './style'
+
 
 export const BALANCES_TAB_BTN_TEST_ID = 'balances-tab-btn'
 export const SETTINGS_TAB_BTN_TEST_ID = 'settings-tab-btn'
@@ -79,7 +82,7 @@ const Layout = (props: Props) => {
     location,
     currencySelected,
     fetchCurrencyValues,
-    currencyValues,
+    currencyValues
   } = props
 
   const handleCallToRouter = (_, value) => {
@@ -94,6 +97,7 @@ const Layout = (props: Props) => {
 
   const { address, ethBalance, name } = safe
   const etherScanLink = getEtherScanLink('address', address)
+  const web3Instance = getWeb3()
 
   return (
     <>
@@ -149,6 +153,7 @@ const Layout = (props: Props) => {
         >
           <Tab label="Balances" value={`${match.url}/balances`} data-testid={BALANCES_TAB_BTN_TEST_ID} />
           <Tab label="Transactions" value={`${match.url}/transactions`} data-testid={TRANSACTIONS_TAB_BTN_TEST_ID} />
+          <Tab label="Apps" value={`${match.url}/apps`} data-testid={TRANSACTIONS_TAB_BTN_TEST_ID} />
           <Tab label="Settings" value={`${match.url}/settings`} data-testid={SETTINGS_TAB_BTN_TEST_ID} />
         </Tabs>
       </Row>
@@ -209,6 +214,17 @@ const Layout = (props: Props) => {
               userAddress={userAddress}
               createTransaction={createTransaction}
               safe={safe}
+            />
+          )}
+        />
+        <Route
+          exact
+          path={`${match.path}/apps`}
+          render={() => (
+            <Apps
+              safeAddress={address}
+              web3={web3Instance}
+              createTransaction={createTransaction}
             />
           )}
         />

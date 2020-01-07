@@ -3,6 +3,7 @@
   "parser": "babel-eslint",
   "plugins": ["jsx-a11y", "jest", "flowtype"],
   "rules": {
+    "comma-dangle": ["error", "never"],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "react/forbid-prop-types": [1, { "forbid": ["object", "any"] }],
     "class-methods-use-this": 0,
