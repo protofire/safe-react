@@ -68,14 +68,17 @@ const createTransaction = ({
   closeSnackbar,
   shouldExecute = false,
   txNonce,
-  operation = CALL
+  operation = CALL,
+  navigateToTransactionsTab = true
 }: CreateTransactionArgs) => async (
   dispatch: ReduxDispatch<GlobalState>,
   getState: GetState<GlobalState>
 ) => {
   const state: GlobalState = getState()
 
-  dispatch(push(`${SAFELIST_ADDRESS}/${safeAddress}/transactions`))
+  if (navigateToTransactionsTab) {
+    dispatch(push(`${SAFELIST_ADDRESS}/${safeAddress}/transactions`))
+  }
 
   const from = userAccountSelector(state)
   const safeInstance = await getGnosisSafeInstanceAt(safeAddress)
