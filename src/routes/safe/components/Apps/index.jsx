@@ -1,6 +1,6 @@
 // @flow
 import React from 'react'
-import { Compound } from 'safe-widgets'
+import { Compound, ENS } from 'safe-widgets'
 import styled from 'styled-components'
 import { DELEGATE_CALL } from '~/logic/safe/transactions/send'
 
@@ -35,18 +35,20 @@ function Apps({ web3, safeAddress, createTransaction }: Props) {
     const encodeMultiSendCalldata = multiSend.methods
       .multiSend(
         `0x${txs
-          .map((tx) => [
-            web3.eth.abi.encodeParameter('uint8', 0).slice(-2),
-            web3.eth.abi.encodeParameter('address', tx.to).slice(-40),
-            web3.eth.abi.encodeParameter('uint256', tx.value).slice(-64),
-            web3.eth.abi
-              .encodeParameter(
-                'uint256',
-                web3.utils.hexToBytes(tx.data).length
-              )
-              .slice(-64),
-            tx.data.replace(/^0x/, '')
-          ].join(''))
+          .map(tx =>
+            [
+              web3.eth.abi.encodeParameter('uint8', 0).slice(-2),
+              web3.eth.abi.encodeParameter('address', tx.to).slice(-40),
+              web3.eth.abi.encodeParameter('uint256', tx.value).slice(-64),
+              web3.eth.abi
+                .encodeParameter(
+                  'uint256',
+                  web3.utils.hexToBytes(tx.data).length
+                )
+                .slice(-64),
+              tx.data.replace(/^0x/, '')
+            ].join('')
+          )
           .join('')}`
       )
       .encodeABI()
@@ -59,13 +61,19 @@ function Apps({ web3, safeAddress, createTransaction }: Props) {
       notifiedTransaction: 'STANDARD_TX',
       enqueueSnackbar: () => {},
       closeSnackbar: () => {},
-      operation: DELEGATE_CALL
+      operation: DELEGATE_CALL,
+      navigateToTransactionsTab: false
     })
   }
 
   return (
     <AppsWrapper>
       <Compound
+        web3={web3}
+        safeAddress={safeAddress}
+        sendTransactions={sendTransactions}
+      />
+      <ENS
         web3={web3}
         safeAddress={safeAddress}
         sendTransactions={sendTransactions}
