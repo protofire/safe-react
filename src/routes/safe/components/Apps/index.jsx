@@ -35,20 +35,18 @@ function Apps({ web3, safeAddress, createTransaction }: Props) {
     const encodeMultiSendCalldata = multiSend.methods
       .multiSend(
         `0x${txs
-          .map(tx =>
-            [
-              web3.eth.abi.encodeParameter('uint8', 0).slice(-2),
-              web3.eth.abi.encodeParameter('address', tx.to).slice(-40),
-              web3.eth.abi.encodeParameter('uint256', tx.value).slice(-64),
-              web3.eth.abi
-                .encodeParameter(
-                  'uint256',
-                  web3.utils.hexToBytes(tx.data).length
-                )
-                .slice(-64),
-              tx.data.replace(/^0x/, '')
-            ].join('')
-          )
+          .map((tx) => [
+            web3.eth.abi.encodeParameter('uint8', 0).slice(-2),
+            web3.eth.abi.encodeParameter('address', tx.to).slice(-40),
+            web3.eth.abi.encodeParameter('uint256', tx.value).slice(-64),
+            web3.eth.abi
+              .encodeParameter(
+                'uint256',
+                web3.utils.hexToBytes(tx.data).length
+              )
+              .slice(-64),
+            tx.data.replace(/^0x/, '')
+          ].join(''))
           .join('')}`
       )
       .encodeABI()
