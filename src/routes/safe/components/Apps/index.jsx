@@ -1,83 +1,137 @@
 // @flow
-import React from 'react'
-import { Compound, ENS } from 'safe-widgets'
+import React, { useState, useEffect, useCallback } from 'react'
 import styled from 'styled-components'
-import { DELEGATE_CALL } from '~/logic/safe/transactions/send'
+
+import sendTransactions from './sendTransactions'
 
 const AppsWrapper = styled.div`
   margin: 15px;
 `
 
+const operations = {
+  SEND_TRANSACTIONS: 'sendTransactions',
+  GET_TRANSACTIONS: 'getTransactions',
+  ON_SAFE_INFO: 'onSafeInfo',
+  ON_TX_UPDATE: 'onTransactionUpdate'
+}
+
 type Props = {
-  safeAddress: String,
   web3: any,
+  safeAddress: String,
+  network: String,
   createTransaction: any
 }
 
-const multiSendAbi = [
-  {
-    type: 'function',
-    name: 'multiSend',
-    constant: false,
-    payable: false,
-    stateMutability: 'nonpayable',
-    inputs: [{ type: 'bytes', name: 'transactions' }],
-    outputs: []
+function Apps({ web3, safeAddress, network, createTransaction }: Props) {
+  const iframeUrl = 'http://localhost:3002'
+
+  const [selectedApp, setSelectedApp] = useState(null)
+  const [appIsLoading, setAppIsLoading] = useState(false)
+  const [iframeEl, seIframeEl] = useState(null)
+
+  const sendMessageToIframe = (messageId, data) => {
+    iframeEl.contentWindow.postMessage({ messageId, data }, iframeUrl)
   }
-]
 
-function Apps({ web3, safeAddress, createTransaction }: Props) {
-  const multiSendAddress = '0xB522a9f781924eD250A11C54105E51840B138AdD'
-  // const masterCopyAddress = '0xaE32496491b53841efb51829d6f886387708F99B'
-  const multiSend = new web3.eth.Contract(multiSendAbi, multiSendAddress)
+  const handleIframeMessage = async data => {
+    if (!data || !data.messageId) {
+      console.warn('iframe: message without messageId')
+      return
+    }
 
-  const sendTransactions = (txs: Array<any>) => {
-    const encodeMultiSendCalldata = multiSend.methods
-      .multiSend(
-        `0x${txs
-          .map((tx) => [
-            web3.eth.abi.encodeParameter('uint8', 0).slice(-2),
-            web3.eth.abi.encodeParameter('address', tx.to).slice(-40),
-            web3.eth.abi.encodeParameter('uint256', tx.value).slice(-64),
-            web3.eth.abi
-              .encodeParameter(
-                'uint256',
-                web3.utils.hexToBytes(tx.data).length
-              )
-              .slice(-64),
-            tx.data.replace(/^0x/, '')
-          ].join(''))
-          .join('')}`
-      )
-      .encodeABI()
+    switch (data.messageId) {
+      case operations.SEND_TRANSACTIONS: {
+        const txHash = await sendTransactions(
+          web3,
+          createTransaction,
+          safeAddress,
+          data.data
+        )
 
-    return createTransaction({
-      safeAddress,
-      to: multiSendAddress,
-      valueInWei: 0,
-      txData: encodeMultiSendCalldata,
-      notifiedTransaction: 'STANDARD_TX',
-      enqueueSnackbar: () => {},
-      closeSnackbar: () => {},
-      operation: DELEGATE_CALL,
-      navigateToTransactionsTab: false
-    })
+        if (txHash) {
+          sendMessageToIframe(operations.ON_TX_UPDATE, {
+            txHash,
+            status: 'pending'
+          })
+        }
+
+        break
+      }
+      case operations.GET_TRANSACTIONS:
+        break
+
+      default: {
+        console.warn(`Iframe:${data.messageId} unkown`)
+        break
+      }
+    }
+  }
+
+  const iframeRef = useCallback(node => {
+    if (node !== null) {
+      seIframeEl(node)
+    }
+  }, [])
+
+  useEffect(() => {
+    const onIframeMessage = async ({ origin, data }) => {
+      if (origin !== iframeUrl) {
+        return
+      }
+
+      handleIframeMessage(data)
+    }
+    window.addEventListener('message', onIframeMessage)
+
+    return () => {
+      window.removeEventListener('message', onIframeMessage)
+    }
+  }, [])
+
+  useEffect(() => {
+    const onIframeLoaded = () => {
+      setAppIsLoading(false)
+      sendMessageToIframe(operations.ON_SAFE_INFO, {
+        safeAddress,
+        network
+      })
+    }
+
+    if (!iframeEl) {
+      return
+    }
+
+    iframeEl.addEventListener('load', onIframeLoaded)
+
+    return () => {
+      iframeEl.removeEventListener('load', onIframeLoaded)
+    }
+  }, [iframeEl])
+
+  const selectApp = () => {
+    setAppIsLoading(true)
+    setSelectedApp({ url: `${iframeUrl}?id=2` })
   }
 
   return (
     <AppsWrapper>
-      <Compound
-        web3={web3}
-        safeAddress={safeAddress}
-        sendTransactions={sendTransactions}
-      />
-      <ENS
-        web3={web3}
-        safeAddress={safeAddress}
-        sendTransactions={sendTransactions}
-      />
+      <button type="button" onClick={selectApp}>
+        load app
+      </button>
+
+      {selectedApp && appIsLoading && 'Loading app...'}
+
+      {selectedApp && (
+        <iframe
+          id="iframeId"
+          title="app"
+          ref={iframeRef}
+          src={selectedApp.url}
+          height="350"
+          width="100%"
+        />
+      )}
     </AppsWrapper>
   )
 }
-
 export default Apps

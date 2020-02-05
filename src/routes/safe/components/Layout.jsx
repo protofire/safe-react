@@ -99,6 +99,15 @@ const Layout = (props: Props) => {
   const etherScanLink = getEtherScanLink('address', address)
   const web3Instance = getWeb3()
 
+  const renderAppTab = () => (
+    <Apps
+      safeAddress={address}
+      web3={web3Instance}
+      network={network}
+      createTransaction={createTransaction}
+    />
+  )
+
   return (
     <>
       <Block className={classes.container} margin="xl">
@@ -220,13 +229,7 @@ const Layout = (props: Props) => {
         <Route
           exact
           path={`${match.path}/apps`}
-          render={() => (
-            <Apps
-              safeAddress={address}
-              web3={web3Instance}
-              createTransaction={createTransaction}
-            />
-          )}
+          render={renderAppTab}
         />
         <Redirect to={`${match.path}/balances`} />
       </Switch>
